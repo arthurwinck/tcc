@@ -11,8 +11,8 @@ def run_mypy():
 
 
 def run_scrapy():
-    os.chdir("path/to/scrapy_project")
-    subprocess.run(["scrapy", "crawl", "conecta-api"])
+    os.chdir("tcc/scraper")
+    subprocess.run(["scrapy", "crawl", "conecta-api", "-O", "json/links.json"])
 
 
 def run_fastapi():
