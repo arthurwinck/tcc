@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/ambv/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        files: "^tcc/|^scripts/"
+  - repo: https://github.com/python-poetry/poetry
+    rev: 1.8.3
+    hooks:
+      - id: poetry-check
+        args: ["-C", "./tcc"]
+      - id: poetry-lock
+        args: ["-C", "./tcc"]
+      - id: poetry-export
+        args:
+          [
+            "-C",
+            "./tcc",
+            "-f",
+            "requirements.txt",
+            "-o",
+            "./tcc/requirements.txt",
+          ]
+      - id: poetry-install
+        args: ["-C", "./tcc"]
