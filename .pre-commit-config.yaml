@@ -3,9 +3,7 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-        files: "^scripts|^tcc/scraper|^tcc/api|^tcc/tests"
   - repo: https://github.com/python-poetry/poetry
-
     rev: 1.8.3
     hooks:
       - id: poetry-check

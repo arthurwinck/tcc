@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import os
 
 
 def run_mypy():
@@ -10,6 +11,7 @@ def run_mypy():
 
 
 def run_scrapy():
+    os.chdir("path/to/scrapy_project")
     subprocess.run(["scrapy", "crawl", "conecta-api"])
 
 
