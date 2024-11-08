@@ -1,6 +1,6 @@
 # Project specific
-tcc/tcc/scraper/html
-tcc/tcc/scraper/json
+*.html
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
