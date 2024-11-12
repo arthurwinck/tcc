@@ -12,6 +12,8 @@ fastapi = {extras = ["standard"], version = "^0.115.0"}
 graphene = ">=3.0"
 scrapy = "^2.11.2"
 isort = "^5.13.2"
+twine = "^5.1.1"
+build = "^1.2.2.post1"
 
 [tool.poetry.scripts]
 api = "scripts.start:api"
