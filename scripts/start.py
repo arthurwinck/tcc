@@ -28,8 +28,7 @@ def run_mypy_then_process(fn):
 
 
 def scraper():
-    run_scrapy()
-    # run_mypy_then_process(run_scrapy)
+    run_mypy_then_process(run_scrapy)
 
 
 def api():

@@ -4,10 +4,6 @@ from scrapy import Spider, Request  # type: ignore
 
 from ..utils import strip_nbsp
 
-# TODO: Arrumar/Criar stubs - Decidir se iremos criar os stubs ou ignorar os type errors
-# TODO: Ajustar comandos pois não está sendo possível executar scrapy pelo poetry (erro de path, deve executar estando no path do projeto do scrapy)
-# TODO: Tentar procurar um linter que ajuste o código automaticamente
-
 
 class ConectaApiSpider(Spider):
     name = "conecta-api"
@@ -35,10 +31,13 @@ class ConectaApiSpider(Spider):
     def parse_api_details(self, response: Request) -> Generator:
         api_name = response.meta["api_name"]
         api_link = response.meta["api_link"]
+        orgao, versao = self.extract_orgao_and_versao(response)
 
         item = {
             "nome": api_name,
             "link": api_link,
+            "orgao": orgao,
+            "versao": versao,
             "descricao": "\n".join(response.css("#descricao p::text").getall()),
             "endpoints": self.extract_endpoints(response),
             "tecnologias": self.extract_tecnologias(response),
@@ -66,7 +65,10 @@ class ConectaApiSpider(Spider):
     def extract_recebimento_resultado(self, response: Request) -> str:
         return ""
 
-    # Acho que extract endpoints pode receber além de endpoints documentação
+    def extract_orgao_and_versao(self, response: Request) -> tuple[str, str]:
+        return response.css(".order-md-2 p::text").getall()[1:3]
+
+    # Acho que extract endpoints pode receber além de endpoints, pode vir algo como documentação
     def extract_endpoints(self, response: Request) -> list[str]:
         endpoints = response.css(
             ".content.detalhamento-tecnico .api-endpoint-producao span::text"

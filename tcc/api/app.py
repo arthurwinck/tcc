@@ -1,4 +1,5 @@
 from typing import Union
+from enum import Enum
 
 from fastapi import FastAPI
 
@@ -13,7 +14,7 @@ Disponibiliza os dados publicados no Portal da Transparência do Governo Federal
 """
 
 endpoint = "portal-transparencia"
-tags: list[str] = list("Portal Transparência")
+tags: list[str | Enum] | None = ["Portal Transparência"]
 
 
 @app.get(f"/{endpoint}", description=description, tags=tags)
