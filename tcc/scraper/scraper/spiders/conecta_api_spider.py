@@ -1,8 +1,8 @@
-from pathlib import Path
-from typing import Generator, Any
-from scrapy import Spider, Request  # type: ignore
-
-from ..utils import strip_nbsp
+import re
+from typing import Generator
+from scrapy import Spider  # type: ignore
+from scrapy.http import Response  # type: ignore
+from ..utils import strip_nbsp, save_html
 
 
 class ConectaApiSpider(Spider):
@@ -10,7 +10,7 @@ class ConectaApiSpider(Spider):
 
     start_urls = ["https://www.gov.br/conecta/catalogo/"]
 
-    def parse(self, response) -> Generator:
+    def parse(self, response: Response) -> Generator:
         page = response.url.split("/")[-2]
 
         for api_card in response.css(".apis .row a"):
@@ -26,9 +26,9 @@ class ConectaApiSpider(Spider):
                 meta={"api_name": api_name, "api_link": api_link},
             )
 
-        self.save_html(page, response)
+        # self.save_html(page, response)
 
-    def parse_api_details(self, response: Request) -> Generator:
+    def parse_api_details(self, response: Response) -> Generator:
         api_name = response.meta["api_name"]
         api_link = response.meta["api_link"]
         orgao, versao = self.extract_orgao_and_versao(response)
@@ -41,7 +41,7 @@ class ConectaApiSpider(Spider):
             "descricao": "\n".join(response.css("#descricao p::text").getall()),
             "endpoints": self.extract_endpoints(response),
             "tecnologias": self.extract_tecnologias(response),
-            "tags": self.get_str_list_from_card_id("tags", response),
+            "tags": self.extract_tags(response),
             "seguranca": self.get_str_list_from_card_id("seguranca", response),
             "hospedagem": self.get_str_list_from_card_id("hospedagem", response),
             "controle-de-acesso": self.get_str_list_from_card_id(
@@ -56,20 +56,11 @@ class ConectaApiSpider(Spider):
 
         yield item
 
-    def extract_como_acessar_api(self, response: Request) -> str:
-        return ""
-
-    def extract_preencha_adesao(self, response: Request) -> str:
-        return ""
-
-    def extract_recebimento_resultado(self, response: Request) -> str:
-        return ""
-
-    def extract_orgao_and_versao(self, response: Request) -> tuple[str, str]:
+    def extract_orgao_and_versao(self, response: Response) -> tuple[str, str]:
         return response.css(".order-md-2 p::text").getall()[1:3]
 
     # Acho que extract endpoints pode receber além de endpoints, pode vir algo como documentação
-    def extract_endpoints(self, response: Request) -> list[str]:
+    def extract_endpoints(self, response: Response) -> list[str]:
         endpoints = response.css(
             ".content.detalhamento-tecnico .api-endpoint-producao span::text"
         ).getall()
@@ -82,24 +73,33 @@ class ConectaApiSpider(Spider):
 
         return [endpoint.strip() for endpoint in endpoints if endpoint]
 
-    def extract_tecnologias(self, response: Request) -> list[str]:
+    def extract_tecnologias(self, response: Response) -> list[str]:
         tecnologias = response.css(
             "#tecnologias .br-card .front .content .conteudo::text"
         ).getall()
         return strip_nbsp(tecnologias)
 
-    def get_str_list_from_card_id(self, id: str, response: Request) -> list[str]:
+    def extract_tags(self, response: Response) -> list[str]:
+        tags_list = self.get_str_list_from_card_id("tags", response)
+
+        cleaned_tags: set[str] = set()
+        for raw_tag in tags_list:
+            matches = re.findall(r"#([^#]+)", raw_tag)  # Captures content after each #
+            # Add each match to the set (unique values), stripped of leading/trailing spaces
+            cleaned_tags.update(tag.strip() for tag in matches)
+        return list(cleaned_tags)
+
+    def get_str_list_from_card_id(self, id: str, response: Response) -> list[str]:
         item_list = response.css(
             f"#{id} .br-card .front .content p::text, #{id} .br-card .front .content div::text"
         ).getall()[1:]
         return strip_nbsp(item_list)
 
-    def save_html(self, page, response) -> None:
-        filename = f"{page}.html"
+    def extract_como_acessar_api(self, response: Response) -> str:
+        return ""
 
-        file_path = Path(f"html/{filename}")
+    def extract_preencha_adesao(self, response: Response) -> str:
+        return ""
 
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-        file_path.write_bytes(response.body)
-
-        self.log(f"Saved file {filename}")
+    def extract_recebimento_resultado(self, response: Response) -> str:
+        return ""

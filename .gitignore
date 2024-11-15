@@ -1,6 +1,6 @@
 # Project specific
 *.html
-*.json
+# *.json
 *.whl
 *.tar.gz
 
