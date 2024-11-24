@@ -3,6 +3,7 @@
 # *.json
 *.whl
 *.tar.gz
+*.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

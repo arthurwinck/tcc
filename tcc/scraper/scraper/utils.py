@@ -1,5 +1,17 @@
+from typing import Optional
 from scrapy.http import Response  # type: ignore
 from pathlib import Path
+
+FIXED_DOC_LINKS = {
+    "portal-da-transparencia-do-governo-federal": "https://api.portaldatransparencia.gov.br/swagger-ui/index.html",
+}
+
+
+def get_fixed_doc_link_or_none(uuid: str) -> Optional[str]:
+    try:
+        return FIXED_DOC_LINKS[uuid]
+    except KeyError:
+        return None
 
 
 def strip_nbsp(string_list: list[str]) -> list[str]:

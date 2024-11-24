@@ -13,10 +13,13 @@ graphene = ">=3.0"
 scrapy = "^2.11.2"
 isort = "^5.13.2"
 streamlit = "^1.40.1"
+langchain-ollama = "^0.2.0"
+langchain = "^0.3.7"
 
 [tool.poetry.scripts]
 api = "scripts.start:api"
 scraper = "scripts.start:scraper"
+front = "scripts.start:front"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

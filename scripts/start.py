@@ -4,19 +4,20 @@ import os
 
 
 def run_mypy():
-    result = subprocess.run(
-        ["poetry", "run", "mypy", "tcc/api", "tcc/scraper"], check=False
-    )
+    result = subprocess.run(["poetry", "run", "mypy", "."], check=False)
     return result.returncode
 
 
 def run_scrapy():
-    os.chdir("tcc/scraper")
     subprocess.run(["scrapy", "crawl", "conecta-api", "-O", "json/links.json"])
 
 
 def run_fastapi():
-    subprocess.run(["fastapi", "dev", "tcc/api/app.py"])
+    subprocess.run(["fastapi", "dev", "app.py"])
+
+
+def run_streamlit():
+    subprocess.run(["streamlit", "run " "app.py"])
 
 
 def run_mypy_then_process(fn):
@@ -28,8 +29,15 @@ def run_mypy_then_process(fn):
 
 
 def scraper():
+    os.chdir("tcc/scraper")
     run_mypy_then_process(run_scrapy)
 
 
 def api():
+    os.chdir("tcc/api")
     run_mypy_then_process(run_fastapi)
+
+
+def front():
+    os.chdir("tcc/frontend")
+    run_mypy_then_process(run_streamlit)
