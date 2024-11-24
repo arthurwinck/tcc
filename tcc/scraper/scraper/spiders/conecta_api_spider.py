@@ -1,9 +1,9 @@
 import re
 from typing import Generator
 from scrapy import Spider  # type: ignore
-from scrapy.http import Response
+from scrapy.http import Response  # type: ignore
 
-from tcc.scraper.scraper.items import APIDetails, APIDetailsItem  # type: ignore
+from tcc.scraper.scraper.items import APIDetails
 from ..utils import get_fixed_doc_link_or_none, strip_nbsp
 
 
@@ -46,9 +46,9 @@ class ConectaApiSpider(Spider):
             ),
         )
 
-        self.extract_or_set_docs(response, item)
+        self.extract_and_set_docs(response, item)
 
-    def extract_or_set_docs(self, response: Response, item: APIDetails):
+    def extract_and_set_docs(self, response: Response, item: APIDetails):
         if not item.links:
             # Dicionário de links de docs que não estão presentes no catalógo da API
             fixed_link = get_fixed_doc_link_or_none(item.uuid)
@@ -59,6 +59,9 @@ class ConectaApiSpider(Spider):
                 response.follow(fixed_link, self.extract_api_info, meta={"item": item})
 
     def extract_api_info(self, response: Response):
+        # TODO - Agora nós precisamos acessar o site da API. Por enquanto temos alguns tipos de documentação
+        # 1 - Swagger, com o link padrão apontado pelo base url ou por um select field
+        # 2 - Próprio, é necessário procurar pelo link na seção de exemplos ou algo do gênero
         pass
 
     def extract_orgao_and_versao(self, response: Response) -> tuple[str, str]:
