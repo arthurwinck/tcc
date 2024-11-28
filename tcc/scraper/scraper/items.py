@@ -14,6 +14,12 @@ class AuthType(Enum):
     API_KEY = 1
 
 
+class HealthType(Enum):
+    UNKNOWN = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+
+
 @dataclass
 class APIDetails(Item):
     api_name: str
@@ -27,6 +33,7 @@ class APIDetails(Item):
     hospedagem: list[str]
     controle_de_acesso: list[str]
     docs: Optional[list[str]] = None
+    health: HealthType = HealthType.UNKNOWN
 
 
 @dataclass
@@ -35,12 +42,14 @@ class APIEndpoint(Item):
     desc: str
 
 
+@dataclass
 class APIEndpointGroup(Item):
-    name: str = Field()
-    endpoints: list[APIEndpoint] = Field()
+    name: str
+    endpoints: list[APIEndpoint]
 
 
+@dataclass
 class APIItem(Item):
-    url: str = Field()
-    auth: AuthType = Field()
-    endpoint_groups: list[APIEndpointGroup] = Field()
+    url: str
+    auth: AuthType
+    endpoint_groups: list[APIEndpointGroup]

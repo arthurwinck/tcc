@@ -1,7 +1,8 @@
 import re
-from typing import Generator
+from typing import Generator, Optional
 from scrapy import Spider  # type: ignore
 from scrapy.http import Response  # type: ignore
+from scrapy_selenium import SeleniumRequest
 
 from tcc.scraper.scraper.items import APIDetails
 from ..utils import get_fixed_doc_link_or_none, strip_nbsp
@@ -48,15 +49,31 @@ class ConectaApiSpider(Spider):
 
         self.extract_and_set_docs(response, item)
 
-    def extract_and_set_docs(self, response: Response, item: APIDetails):
+    def find_doc_link(self, item: APIDetails) -> Optional[str]:
+        doc_link_to_extract: Optional[str] = None
+
         if not item.links:
             # Dicionário de links de docs que não estão presentes no catalógo da API
-            fixed_link = get_fixed_doc_link_or_none(item.uuid)
+            return get_fixed_doc_link_or_none(item.uuid)
 
-            if not fixed_link:
-                yield item
-            else:
-                response.follow(fixed_link, self.extract_api_info, meta={"item": item})
+        # Iterar sobre os links e tentar buscar o link para a documentação
+        for link in item.links:
+            pass
+
+        return None
+
+    def extract_and_set_docs(self, response: Response, item: APIDetails):
+        # Provavelmente aqui vou precisar dar um response.follow para tentar acessar os links das APIs e verificar se as
+        # existe algo que diga que é uma documentação de api
+
+        doc_link = self.find_doc_link(item)
+
+        yield SeleniumRequest(
+            url=doc_link,
+            callback=self.extract_api_info,
+            wait_time=5,
+            meta={"item": item, "response": response},
+        )
 
     def extract_api_info(self, response: Response):
         # TODO - Agora nós precisamos acessar o site da API. Por enquanto temos alguns tipos de documentação

@@ -1,3 +1,5 @@
+from shutil import which
+
 # Scrapy settings for scraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -91,3 +93,9 @@ ROBOTSTXT_OBEY = True
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+SELENIUM_DRIVER_NAME = "chrome"
+SELENIUM_DRIVER_EXECUTABLE_PATH = which("chromedriver")
+SELENIUM_DRIVER_ARGUMENTS = ["--headless"]
+
+DOWNLOADER_MIDDLEWARES = {"scrapy_selenium.SeleniumMiddleware": 800}
