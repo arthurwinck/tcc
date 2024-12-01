@@ -1,15 +1,15 @@
+from dataclasses import asdict
 import re
-from typing import Generator, Optional
+from typing import Generator
 from scrapy import Spider  # type: ignore
 from scrapy.http import Response  # type: ignore
-from scrapy_selenium import SeleniumRequest
 
-from tcc.scraper.scraper.items import APIDetails
-from ..utils import get_fixed_doc_link_or_none, strip_nbsp
+from tcc.scraper.scraper.items import APIDetails, APIDocs
+from ..utils import SWAGGER, Utils
 
 
 class ConectaApiSpider(Spider):
-    name = "conecta-api"
+    name = "conecta_api_spider"
 
     start_urls = ["https://www.gov.br/conecta/catalogo/"]
 
@@ -31,13 +31,15 @@ class ConectaApiSpider(Spider):
 
         uuid = self.get_uuid(api_link)
         orgao, versao = self.extract_orgao_and_versao(response)
+        links = self.extract_links(response)
 
         item = APIDetails(
             api_name=api_name,
             uuid=uuid,
             orgao=orgao,
             versao=versao,
-            links=self.extract_links(response),
+            links=links,
+            docs=self.find_doc_link(uuid, links),
             tecnologias=self.extract_tecnologias(response),
             tags=self.extract_tags(response),
             seguranca=self.get_str_list_from_card_id("seguranca", response),
@@ -47,39 +49,27 @@ class ConectaApiSpider(Spider):
             ),
         )
 
-        self.extract_and_set_docs(response, item)
+        # yield item
 
-    def find_doc_link(self, item: APIDetails) -> Optional[str]:
-        doc_link_to_extract: Optional[str] = None
+    def find_doc_link(self, uuid: str, links: list[str]) -> APIDocs:
+        fixed_doc_link = Utils.get_fixed_doc_link_or_none(
+            uuid
+        )  # Dicionário de links de docs que não estão presentes no catalógo da API
 
-        if not item.links:
-            # Dicionário de links de docs que não estão presentes no catalógo da API
-            return get_fixed_doc_link_or_none(item.uuid)
+        if fixed_doc_link:
+            links.insert(0, fixed_doc_link)
 
-        # Iterar sobre os links e tentar buscar o link para a documentação
-        for link in item.links:
-            pass
+        swagger_links: list[str] = []
+        custom_links: list[str] = []
 
-        return None
+        for link in links:
+            # Teste de links para checarmos se possuimos uma documentacao de api
+            if SWAGGER in link:
+                swagger_links.append(link)
+            elif Utils.contains_docs_keywords(link):
+                custom_links.append(link)
 
-    def extract_and_set_docs(self, response: Response, item: APIDetails):
-        # Provavelmente aqui vou precisar dar um response.follow para tentar acessar os links das APIs e verificar se as
-        # existe algo que diga que é uma documentação de api
-
-        doc_link = self.find_doc_link(item)
-
-        yield SeleniumRequest(
-            url=doc_link,
-            callback=self.extract_api_info,
-            wait_time=5,
-            meta={"item": item, "response": response},
-        )
-
-    def extract_api_info(self, response: Response):
-        # TODO - Agora nós precisamos acessar o site da API. Por enquanto temos alguns tipos de documentação
-        # 1 - Swagger, com o link padrão apontado pelo base url ou por um select field
-        # 2 - Próprio, é necessário procurar pelo link na seção de exemplos ou algo do gênero
-        pass
+        return APIDocs(swagger_links, custom_links)
 
     def extract_orgao_and_versao(self, response: Response) -> tuple[str, str]:
         orgao_versao_list: list[str] = response.css(".order-md-2 p::text").getall()
@@ -106,13 +96,13 @@ class ConectaApiSpider(Spider):
         if endpoints_and_docs:
             endpoints.extend(endpoints_and_docs)
 
-        return [endpoint.strip() for endpoint in endpoints if endpoint]
+        return Utils.strip_and_filter_none(endpoints)
 
     def extract_tecnologias(self, response: Response) -> list[str]:
         tecnologias = response.css(
             "#tecnologias .br-card .front .content .conteudo::text"
         ).getall()
-        return strip_nbsp(tecnologias)
+        return Utils.strip_nbsp(tecnologias)
 
     def extract_tags(self, response: Response) -> list[str]:
         tags_list = self.get_str_list_from_card_id("tags", response)
@@ -120,7 +110,7 @@ class ConectaApiSpider(Spider):
         cleaned_tags: set[str] = set()
         for raw_tag in tags_list:
             matches = re.findall(r"#([^#]+)", raw_tag)
-            cleaned_tags.update(tag.strip() for tag in matches)
+            cleaned_tags.update(Utils.strip_and_filter_none(matches))
         return list(cleaned_tags)
 
     def get_uuid(self, api_link: str) -> str:
@@ -131,4 +121,4 @@ class ConectaApiSpider(Spider):
         item_list = response.css(
             f"#{id} .br-card .front .content p::text, #{id} .br-card .front .content div::text"
         ).getall()[1:]
-        return strip_nbsp(item_list)
+        return Utils.strip_nbsp(item_list)

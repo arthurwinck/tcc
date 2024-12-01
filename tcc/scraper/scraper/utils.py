@@ -2,28 +2,47 @@ from typing import Optional
 from scrapy.http import Response  # type: ignore
 from pathlib import Path
 
+# Posteriormente isso vai ser carregado de outro lugar
 FIXED_DOC_LINKS = {
     "portal-da-transparencia-do-governo-federal": "https://api.portaldatransparencia.gov.br/swagger-ui/index.html",
 }
 
-
-def get_fixed_doc_link_or_none(uuid: str) -> Optional[str]:
-    try:
-        return FIXED_DOC_LINKS[uuid]
-    except KeyError:
-        return None
+KEYWORDS = ["api-docs", "openapi", "rest", "docs"]
+SWAGGER = "swagger"
 
 
-def strip_nbsp(string_list: list[str]) -> list[str]:
-    return [item.strip().strip("\xa0") for item in string_list if item]
+class Utils:
+    @staticmethod
+    def get_base_url(url: str) -> str:
+        split_url = url.split("/")
 
+        # ['https:', '', 'teste.br', ...]
+        return split_url[0] + "//" + split_url[2]
 
-def save_html(self, page, response: Response) -> None:
-    filename = f"{page}.html"
+    @staticmethod
+    def contains_docs_keywords(link: str) -> bool:
+        return any(keyword in link.lower() for keyword in KEYWORDS)
 
-    file_path = Path(f"html/{filename}")
+    @staticmethod
+    def contains_swagger_keyword(links: list[str]) -> list[str]:
+        return [link for link in links if SWAGGER in link.lower()]
 
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    file_path.write_bytes(response.body)
+    @staticmethod
+    def get_fixed_doc_link_or_none(uuid: str) -> Optional[str]:
+        try:
+            return FIXED_DOC_LINKS[uuid]
+        except KeyError:
+            return None
 
-    self.log(f"Saved file {filename}")
+    @staticmethod
+    def strip_nbsp(string_list: list[str]) -> list[str]:
+        return [item.strip().strip("\xa0") for item in string_list if item]
+
+    @staticmethod
+    def save_html(name: str, content):
+        with open(f"html/{name}.html", "w", encoding="utf-8") as file:
+            file.write(content)
+
+    @staticmethod
+    def strip_and_filter_none(list: list[str]) -> list:
+        return [item.strip() for item in list if item]

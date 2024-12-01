@@ -1,12 +1,6 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional
-from scrapy import Item, Field  # type: ignore
 
 
 class AuthType(Enum):
@@ -21,7 +15,19 @@ class HealthType(Enum):
 
 
 @dataclass
-class APIDetails(Item):
+class APIDocs:
+    swagger_links: list[str]
+    custom_links: list[str]
+
+
+@dataclass
+class API2ParseDto:
+    uuid: str
+    api_docs: APIDocs
+
+
+@dataclass
+class APIDetails:
     api_name: str
     uuid: str
     orgao: str
@@ -32,24 +38,24 @@ class APIDetails(Item):
     seguranca: list[str]
     hospedagem: list[str]
     controle_de_acesso: list[str]
-    docs: Optional[list[str]] = None
-    health: HealthType = HealthType.UNKNOWN
+    docs: Optional[APIDocs] = None
+    health: int = HealthType.UNKNOWN.value
 
 
 @dataclass
-class APIEndpoint(Item):
-    url: str
+class APIEndpoint:
+    endpoint: str
     desc: str
 
 
 @dataclass
-class APIEndpointGroup(Item):
+class APIEndpointGroup:
     name: str
     endpoints: list[APIEndpoint]
 
 
 @dataclass
-class APIItem(Item):
+class APIItem:
     url: str
     auth: AuthType
     endpoint_groups: list[APIEndpointGroup]

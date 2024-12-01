@@ -9,7 +9,7 @@ def run_mypy():
 
 
 def run_scrapy():
-    subprocess.run(["scrapy", "crawl", "conecta-api", "-O", "json/links.json"])
+    subprocess.run(["scrapy", "crawl", "conecta-api", "-O", "json/links-stable.json"])
 
 
 def run_fastapi():

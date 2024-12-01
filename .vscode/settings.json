@@ -1,4 +1,5 @@
 {
   "python.analysis.autoImportCompletions": true,
-  "python.analysis.autoIndent": true
+  "python.analysis.autoIndent": true,
+  "python.analysis.typeCheckingMode": "standard"
 }

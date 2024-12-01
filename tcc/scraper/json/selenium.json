@@ -1,0 +1,15 @@
+[
+{"uuid": "consulta-cadastro-integrado-de-projetos-de-investimentos-2013-obrasgov.br", "open_api_link": "https://api.obrasgov.gestao.gov.br/obrasgov/api/api-obrasgov-docs"},
+{"uuid": "portal-da-transparencia-do-governo-federal", "open_api_link": "https://api.portaldatransparencia.gov.br/v3/api-docs"},
+{"uuid": "pessoa-com-deficiencia", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/pessoa-com-deficiencia/PCD_final_conecta.json/swagger.json"},
+{"uuid": "cadunico-servicos-indicadores-familiares", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/cadunico-servicos-indicadores-familiares/CADUNICO_Servicos_Indicadores.json/swagger.json"},
+{"uuid": "sigef-geo", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/sigef-geo/sigef-geo-01-json/swagger.json"},
+{"uuid": "consulta-cnpj", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/consulta-cnpj/swagger_cnpj.json/swagger.json"},
+{"uuid": "faixa-de-renda-de-grupo-familiar", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/faixa-de-renda-de-grupo-familiar/API%20Faixa%20de%20Renda.json/swagger.json"},
+{"uuid": "cadunico-servicos-dados-familiares", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/cadunico-servicos-dados-familiares/CadUnico_Servicos_Dados_Familiares.json/swagger.json"},
+{"uuid": "sncci", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/sncci/swagger_sncci.json/swagger.json"},
+{"uuid": "relacao-trabalhista", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/relacao-trabalhista/relacao_trabalhista_final.json/swagger.json"},
+{"uuid": "cadunico-servicos", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/cadunico-servicos/cadunico_servicos.json/swagger.json"},
+{"uuid": "cep-codigo-de-enderecamento-postal", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/cep-codigo-de-enderecamento-postal/swagger-json/swagger.json"},
+{"uuid": "api-beneficios-previdenciarios", "open_api_link": "https://www.gov.br/conecta/catalogo/apis/api-beneficios-previdenciarios/Beneficios_previdenciarios.json/swagger.json"}
+]

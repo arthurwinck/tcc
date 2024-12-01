@@ -89,13 +89,8 @@ ROBOTSTXT_OBEY = True
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
 
-# Set settings whose default value is deprecated to a future-proof value
-REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
-TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
-
-SELENIUM_DRIVER_NAME = "chrome"
+JSON_FILE_PATH = "json/links-stable.json"
 SELENIUM_DRIVER_EXECUTABLE_PATH = which("chromedriver")
-SELENIUM_DRIVER_ARGUMENTS = ["--headless"]
-
-DOWNLOADER_MIDDLEWARES = {"scrapy_selenium.SeleniumMiddleware": 800}
+# AUTOTHROTTLE_ENABLED = True
+# DOWNLOAD_DELAY = 2

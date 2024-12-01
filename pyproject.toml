@@ -15,7 +15,7 @@ isort = "^5.13.2"
 streamlit = "^1.40.1"
 langchain-ollama = "^0.2.0"
 langchain = "^0.3.7"
-scrapy-selenium = "^0.0.7"
+selenium = "^4.27.1"
 
 [tool.poetry.scripts]
 api = "scripts.start:api"
