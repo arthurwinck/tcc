@@ -1,8 +1,8 @@
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Callable, Optional
 
-
+# Scraping models -----------------------------
 class HealthType(Enum):
     UNKNOWN = 0
     HEALTHY = 1
@@ -37,14 +37,23 @@ class APIDetails:
     health: int = HealthType.UNKNOWN.value
 
 
+# API Loading models -----------------------------
+
+
 @dataclass
 class APIEndpoint:
-    path: str
     method: str
     summary: str
     operation_id: str
-    parameters: list[str] = field(default_factory=list)
+    parameters: list[dict] = field(default_factory=list)
+    # parameters: list[APIParameter] = field(default_factory=list)
     responses: dict = field(default_factory=dict)
+
+    def __str__(self):
+        return (
+            f"APIEndpoint(method={self.method}, summary={self.summary}, "
+            f"operation_id={self.operation_id}, parameters={self.parameters}, responses={self.responses})"
+        )
 
 
 @dataclass
@@ -52,8 +61,23 @@ class APIPathItem:
     path: str
     endpoints: list[APIEndpoint]
 
+    def __str__(self):
+        endpoints_str = ", ".join(str(endpoint) for endpoint in self.endpoints)
+        return f"APIPathItem(path={self.path}, endpoints=[{endpoints_str}])"
+
+
+@dataclass
+class APIServer:
+    url: str
+    description: str
+
 
 @dataclass
 class APIItem:
     uuid: str
     paths: list[APIPathItem]
+    servers: list[APIServer]
+
+    def __str__(self):
+        paths_str = ", ".join(str(path_item) for path_item in self.paths)
+        return f"APIItem(uuid={self.uuid}, paths=[{paths_str}])"

@@ -1,16 +1,17 @@
 import json, os, requests
 from typing import Generator
 
-from tcc.model import APIEndpoint, APIPathItem, APIItem
+from tcc.model import APIEndpoint, APIPathItem, APIItem, APIServer
+from tcc.utils import Utils
+
+JSON_PATH = "../resources/json/selenium-stable.json"
 
 
 class OpenApiLoader:
     def __init__(self) -> None:
         self.open_api_urls: list[dict]
 
-    def load(
-        self, path: str = "../resources/json/selenium-stable.json"
-    ) -> list[APIItem]:
+    def load(self, path: str = JSON_PATH) -> list[APIItem]:
         self.load_json(path)
 
         api_list: list[APIItem] = list()
@@ -22,11 +23,15 @@ class OpenApiLoader:
                     response_json
                 )
 
+                servers = self.get_servers(response_json)
+
                 if api_path_list and uuid:
-                    api_list.append(APIItem(paths=api_path_list, uuid=uuid))
-            except:
-                print(
-                    f"ERROR - Erro ao decodificar responsta JSON de {uuid}, continuando"
+                    api_list.append(
+                        APIItem(paths=api_path_list, uuid=uuid, servers=servers)
+                    )
+            except Exception as e:
+                Utils.log_error(
+                    f"Erro ao decodificar resposta JSON de {uuid}, continuando. Exceção disparada: {e}"
                 )
 
         return api_list
@@ -49,6 +54,28 @@ class OpenApiLoader:
 
             yield None, None
 
+    def get_servers(self, json: dict) -> list[APIServer]:
+        servers = None
+        server_list: list[APIServer] = []
+
+        try:
+            servers = json.get("servers", [])
+        except Exception as e:
+            Utils.log_error(
+                f"Erro ao recuperar Urls de servidores - convém passar as urls no webscraping. Exceção disparada: {e}"
+            )
+
+        if servers:
+            for server in servers:
+                server_list.append(
+                    APIServer(
+                        url=server.get("url", None),
+                        description=server.get("description", None),
+                    )
+                )
+
+        return server_list
+
     def parse_openapi_to_object(self, json: dict) -> list[APIPathItem]:
         paths: dict = json.get("paths", {})
         api_items: list[APIPathItem] = []
@@ -57,7 +84,6 @@ class OpenApiLoader:
             endpoints = []
             for method, details in methods.items():
                 endpoint = APIEndpoint(
-                    path=path,
                     method=method.upper(),
                     summary=details.get("summary", ""),
                     operation_id=details.get("operationId", ""),

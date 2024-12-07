@@ -5,7 +5,7 @@ from scrapy import Spider  # type: ignore
 from scrapy.http import Response  # type: ignore
 
 from tcc.model import APIDetails, APIDocs
-from ..utils import SWAGGER, Utils
+from tcc.utils import SWAGGER, Utils  # type: ignore
 
 
 class ConectaApiSpider(Spider):

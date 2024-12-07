@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
 from tcc.model import API2ParseDto, APIDocs
-from tcc.scraper.scraper.utils import Utils
+from tcc.utils import Utils  # type: ignore
 
 
 class APISeleniumSpider(Spider):
