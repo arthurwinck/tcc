@@ -4,7 +4,7 @@ from typing import Generator
 from scrapy import Spider  # type: ignore
 from scrapy.http import Response  # type: ignore
 
-from tcc.scraper.scraper.items import APIDetails, APIDocs
+from tcc.model import APIDetails, APIDocs
 from ..utils import SWAGGER, Utils
 
 

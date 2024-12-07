@@ -1,0 +1,124 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CADUNICO API",
+    "description": "Conjunto de Serviços para consulta de informações provenientes da base do CADUNICO mantida na Dataprev.",
+    "version": "1.9.0",
+    "schemes": ["https", "http"]
+  },
+  "servers": [
+    {
+      "url": "https://apigateway.conectagov.estaleiro.serpro.gov.br/api-cadunico-servicos",
+      "description": "Servidor de Produção"
+    },
+    {
+      "url": "https://h-apigateway.conectagov.estaleiro.serpro.gov.br/api-cadunico-servicos",
+      "description": "Servidor de Homologação"
+    }
+  ],
+  "paths": {
+    "/v1/situacaoCadastral/{cpf}": {
+      "get": {
+        "tags": ["SGD"],
+        "summary": "Dado o CPF, informa sim/não para a) se pessoa está cadastrada; b) se família é de baixa renda e c) se cadastro está atualizado",
+        "operationId": "consultarSituacaoCadastralPorCpf",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituacaoCadastralV1DTO"
+                }
+              }
+            }
+          }
+        },
+        "x-auth-type": "Application & Application User",
+        "x-throttling-tier": "Unlimited"
+      }
+    },
+    "/v1/situacaoCadastral/nis/{nis}": {
+      "get": {
+        "tags": ["SGD"],
+        "summary": "Dado o NIS, informa sim/não para a) se pessoa está cadastrada; b) se família é de baixa renda e c) se cadastro está atualizado",
+        "operationId": "consultarSituacaoCadastralPorNis",
+        "parameters": [
+          {
+            "name": "nis",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituacaoCadastralV1DTO"
+                }
+              }
+            }
+          }
+        },
+        "x-auth-type": "Application & Application User",
+        "x-throttling-tier": "Unlimited"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SituacaoCadastralV1DTO": {
+        "type": "object",
+        "properties": {
+          "pessoaCadastrada": {
+            "type": "string",
+            "enum": ["Sim", "Não"]
+          },
+          "familiaBaixaRenda": {
+            "type": "string",
+            "enum": ["Sim", "Não"]
+          },
+          "cadastroAtualizado": {
+            "type": "string",
+            "enum": ["Sim", "Não"]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2Authorization": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://apigateway.conectagov.estaleiro.serpro.gov.br/oauth2/jwt-token",
+            "scopes": {}
+          }
+        }
+      },
+      "OAuth2AuthorizationHom": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://h-apigateway.conectagov.estaleiro.serpro.gov.br/oauth2/jwt-token",
+            "scopes": {}
+          }
+        }
+      }
+    }
+  }
+}

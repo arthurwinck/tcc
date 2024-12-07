@@ -1,18 +1,13 @@
-from dataclasses import asdict
 import json
 import time
-from typing import Optional
 from scrapy import Spider, Request  # type: ignore
 from scrapy.http import Response  # type: ignore
 from parsel import Selector
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-from tcc.scraper.scraper.items import API2ParseDto, APIDocs
+from tcc.model import API2ParseDto, APIDocs
 from tcc.scraper.scraper.utils import Utils
 
 
@@ -25,6 +20,7 @@ class APISeleniumSpider(Spider):
         chrome_options = Options()
         # chrome_options.add_argument("--headless")
         # chrome_options.add_argument("--disable-gpu")
+
         self.driver = webdriver.Chrome(
             service=Service(self.settings.get("SELENIUM_DRIVER_EXECUTABLE_PATH")),
             options=chrome_options,
@@ -78,5 +74,5 @@ class APISeleniumSpider(Spider):
 
             yield {"uuid": dto.uuid, "open_api_link": open_api_download_link}
 
-    def closed(self, reason):
+    def closed(self):
         self.driver.quit()

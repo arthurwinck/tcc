@@ -1,11 +1,6 @@
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
-
-
-class AuthType(Enum):
-    NONE = 0
-    API_KEY = 1
 
 
 class HealthType(Enum):
@@ -44,18 +39,21 @@ class APIDetails:
 
 @dataclass
 class APIEndpoint:
-    endpoint: str
-    desc: str
+    path: str
+    method: str
+    summary: str
+    operation_id: str
+    parameters: list[str] = field(default_factory=list)
+    responses: dict = field(default_factory=dict)
 
 
 @dataclass
-class APIEndpointGroup:
-    name: str
+class APIPathItem:
+    path: str
     endpoints: list[APIEndpoint]
 
 
 @dataclass
 class APIItem:
-    url: str
-    auth: AuthType
-    endpoint_groups: list[APIEndpointGroup]
+    uuid: str
+    paths: list[APIPathItem]

@@ -16,6 +16,7 @@ streamlit = "^1.40.1"
 langchain-ollama = "^0.2.0"
 langchain = "^0.3.7"
 selenium = "^4.27.1"
+types-requests = "^2.32.0.20241016"
 
 [tool.poetry.scripts]
 api = "scripts.start:api"
