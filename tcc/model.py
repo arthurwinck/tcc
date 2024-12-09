@@ -1,6 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import Callable, Optional
+from typing import Optional
 
 # Scraping models -----------------------------
 class HealthType(Enum):
@@ -69,7 +69,7 @@ class APIPathItem:
 @dataclass
 class APIServer:
     url: str
-    description: str
+    description: Optional[str]
 
 
 @dataclass

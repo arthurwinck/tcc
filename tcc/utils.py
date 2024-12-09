@@ -1,8 +1,10 @@
-from dataclasses import asdict, is_dataclass
 import os, json
+from dataclasses import asdict, is_dataclass
 from typing import Optional, TypeAlias
-from scrapy.http import Response  # type: ignore
-from pathlib import Path
+from dacite import from_dict
+
+
+from tcc.model import APIItem
 
 # Posteriormente isso vai ser carregado de outro lugar
 FIXED_DOC_LINKS = {
@@ -12,7 +14,7 @@ FIXED_DOC_LINKS = {
 KEYWORDS = ["api-docs", "openapi", "rest", "docs"]
 SWAGGER = "swagger"
 
-Json: TypeAlias = list | dict
+Json: TypeAlias = list | dict | None
 
 
 class Utils:
@@ -24,19 +26,35 @@ class Utils:
 
     @staticmethod
     def transform_to_json_compliant(data: Json):
+        if not data:
+            Utils.log_error("variável data é vazia, não é possível salvar")
+            return
+
         json_data = None
 
+        if isinstance(data, dict):
+            json_data = data
         if is_dataclass(data):
             json_data = asdict(data)
-        else:
+        elif isinstance(data, list):
             try:
                 json_data = [asdict(obj) for obj in data]
             except:
                 Utils.log_error(
-                    "Tipo não permitido para conversão de Dataclass em JSON"
+                    f"Tipo: {type(data)} não permitido para conversão de Dataclass em JSON"
                 )
 
         return json_data
+
+    @staticmethod
+    def load_api_item_json(filename: str, path: str = "resources/json"):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        folder_path = os.path.join(base_path, path)
+
+        with open(os.path.join(folder_path, filename), "r") as f:
+            data = json.load(f)
+
+        return [from_dict(APIItem, item) for item in data]
 
     @staticmethod
     def save_json(content: Json, filename: str, path: str = "resources/json"):
@@ -47,9 +65,7 @@ class Utils:
 
         os.makedirs(path, exist_ok=True)
 
-        file_path = os.path.join(folder_path, filename)
-
-        with open(file_path, "w", encoding="utf-8") as file:
+        with open(os.path.join(folder_path, filename), "w", encoding="utf-8") as file:
             json.dump(json_data, file)
 
     @staticmethod
