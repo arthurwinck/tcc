@@ -2,10 +2,7 @@ import json, os, requests
 from typing import Generator
 
 from tcc.model import APIEndpoint, APIPathItem, APIItem, APIServer
-from tcc.utils import Utils
-
-JSON_PATH = "../resources/json/selenium-stable.json"
-
+from tcc.utils import Utils, CACHED_API_ITEM_LIST_FILE, JSON_PATH
 
 class OpenApiLoader:
     """
@@ -35,14 +32,16 @@ class OpenApiLoader:
         self._load_json(path)
         return self._download_and_parse_json(use_cached)
 
+
     def _load_cached(self) -> list[APIItem] | None:
         try:
-            return Utils.load_api_item_json("api_item_list.json")
+            return Utils.load_api_item_json(CACHED_API_ITEM_LIST_FILE)
         except Exception as e:
             Utils.log_error(
                 f"Não foi possível carregar informações cacheadas. Exceção disparada: {e}"
             )
             return None
+
 
     def _download_and_parse_json(self, use_cached: bool) -> list[APIItem]:
         api_list: list[APIItem] = list()

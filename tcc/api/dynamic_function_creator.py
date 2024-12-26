@@ -1,8 +1,6 @@
 import re
 from httpx import AsyncClient
-
 from tcc.api.model import DynamicEndpoint
-
 
 class DynamicFunctionCreator:
     @staticmethod
@@ -15,7 +13,6 @@ class DynamicFunctionCreator:
         only_path: str,
     ) -> DynamicEndpoint:
 
-        # Usar biblioteca de inspection para possivelmente mudar os parametros
         async def endpoint_function(**kwargs):
             url = url_path
 
@@ -24,27 +21,30 @@ class DynamicFunctionCreator:
                     to_replace = "{" + param_key + "}"
                     url = url.replace(to_replace, str(kwargs["params"][param_key]))
 
+            params_to_request = kwargs.get("params", {})
+            json_to_request = kwargs.get("body", None)
+            headers_to_request = kwargs.get("headers", {})
+
             async with AsyncClient() as client:
-                # Mandar a requisição pra API original
                 response = await client.request(
                     method=method,
                     url=url,
-                    params=kwargs.get("params", {}),
-                    json=kwargs.get("body", {}),
-                    headers=kwargs.get("headers", {}),
+                    params=params_to_request,
+                    json=json_to_request,
+                    headers=headers_to_request,
                 )
 
-                if response.status_code != 200:
-                    data = "Forbidden"
-                else:
-                    data = response.json()
+            if response.status_code != 200:
+                data = f"Error {response.status_code}"
+            else:
+                data = response.json()
 
-                return {
-                    "status_code": response.status_code,
-                    "data": data,
-                    "parameters": kwargs.get("params", {}),
-                    "url": url,
-                }
+            return {
+                "status_code": response.status_code,
+                "data": data,
+                "parameters": kwargs.get("params", {}),
+                "url": url,
+            }
 
         DynamicFunctionCreator._set_metadata_for_function(
             endpoint_function, url_path, method, params, responses, uuid, only_path

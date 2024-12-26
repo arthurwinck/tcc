@@ -2,8 +2,6 @@ import os, json
 from dataclasses import asdict, is_dataclass
 from typing import Optional, TypeAlias
 from dacite import from_dict
-
-
 from tcc.model import APIItem
 
 # Posteriormente isso vai ser carregado de outro lugar
@@ -14,8 +12,10 @@ FIXED_DOC_LINKS = {
 KEYWORDS = ["api-docs", "openapi", "rest", "docs"]
 SWAGGER = "swagger"
 
-Json: TypeAlias = list | dict | None
+JSON_PATH = "../resources/json/selenium-stable.json"
+CACHED_API_ITEM_LIST_FILE = "cached_api_item_list.json"
 
+Json: TypeAlias = list | dict | None
 
 class Utils:
     @staticmethod
@@ -46,10 +46,11 @@ class Utils:
 
         return json_data
 
+
     @staticmethod
-    def load_api_item_json(filename: str, path: str = "resources/json"):
+    def load_api_item_json(filename: str, path: list[str] = ["resources", "json"]):
         base_path = os.path.dirname(os.path.abspath(__file__))
-        folder_path = os.path.join(base_path, path)
+        folder_path = os.path.join(base_path, *path)
 
         with open(os.path.join(folder_path, filename), "r") as f:
             data = json.load(f)
