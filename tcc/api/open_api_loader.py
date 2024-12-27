@@ -76,7 +76,7 @@ class OpenApiLoader:
     def _load_json(self, path: str) -> None:
         base_path = os.path.dirname(os.path.abspath(__file__))
 
-        with open(os.path.join(base_path, path)) as file:
+        with open(os.path.join(base_path, path), encoding="utf-8") as file:
             self.open_api_urls = json.load(file)
 
     def _download_open_api_json(self) -> Generator:

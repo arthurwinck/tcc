@@ -15,12 +15,20 @@ generator = EndpointGenerator()
 
 api_item_list: list[APIItem] = loader.load(use_cached=False)
 
+for api_item in api_item_list:
+    print(api_item.name)
+
 # Generator transforma a lista de APIITems em endpoints (funções) criadas dinamicamente.
 generator = EndpointGenerator()
 
-routers = generator.create_routers_from_openapi(api_item_list)
+# routers = generator.create_routers_from_openapi(api_item_list)
+dict = generator._testing_return_endpoints_dict(api_item_list)
 
-app = FastAPI(title="API Wrapper do Catálogo Conecta")
+# for key, value in dict.items():
+#     for skey, svalue in value.items():
+#         print(svalue)
 
-for router in routers:
-    app.include_router(router)
+# app = FastAPI(title="API Wrapper do Catálogo Conecta")
+
+# for router in routers:
+#     app.include_router(router)

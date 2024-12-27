@@ -67,7 +67,7 @@ class Utils:
         os.makedirs(path, exist_ok=True)
 
         with open(os.path.join(folder_path, filename), "w", encoding="utf-8") as file:
-            json.dump(json_data, file)
+            json.dump(json_data, file, ensure_ascii=False)
 
     @staticmethod
     def get_base_url(url: str) -> str:
