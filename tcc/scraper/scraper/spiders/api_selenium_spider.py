@@ -36,6 +36,7 @@ class APISeleniumSpider(Spider):
             if item["docs"]["swagger_links"]:
 
                 dto = API2ParseDto(
+                    name=item["api_name"],
                     uuid=item["uuid"],
                     api_docs=APIDocs(
                         custom_links=item["docs"]["custom_links"],
@@ -68,11 +69,15 @@ class APISeleniumSpider(Spider):
 
             open_api_link = base_link + open_api_url
 
-            yield {"uuid": dto.uuid, "open_api_link": open_api_link}
+            yield {"name": dto.name, "uuid": dto.uuid, "open_api_link": open_api_link}
 
         elif open_api_download_link:
 
-            yield {"uuid": dto.uuid, "open_api_link": open_api_download_link}
+            yield {
+                "name": dto.name,
+                "uuid": dto.uuid,
+                "open_api_link": open_api_download_link,
+            }
 
     def closed(self):
         self.driver.quit()

@@ -17,13 +17,14 @@ class APIDocs:
 
 @dataclass
 class API2ParseDto:
+    name: str
     uuid: str
     api_docs: APIDocs
 
 
 @dataclass
 class APIDetails:
-    api_name: str
+    name: str
     uuid: str
     orgao: str
     versao: str
@@ -74,7 +75,7 @@ class APIServer:
 @dataclass
 class APIItem:
     uuid: str
-    # name: str
+    name: str
     paths: list[APIPathItem]
     servers: list[APIServer]
 

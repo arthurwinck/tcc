@@ -13,14 +13,14 @@ from tcc.api.endpoint_generator import EndpointGenerator
 loader = OpenApiLoader()
 generator = EndpointGenerator()
 
-api_item_list: list[APIItem] = loader.load(use_cached=True)
+api_item_list: list[APIItem] = loader.load(use_cached=False)
 
 # Generator transforma a lista de APIITems em endpoints (funções) criadas dinamicamente.
 generator = EndpointGenerator()
 
 routers = generator.create_routers_from_openapi(api_item_list)
 
-app = FastAPI()
+app = FastAPI(title="API Wrapper do Catálogo Conecta")
 
 for router in routers:
     app.include_router(router)
