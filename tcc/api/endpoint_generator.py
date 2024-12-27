@@ -37,7 +37,9 @@ class EndpointGenerator:
         routers: list[APIRouter] = []
 
         for api_item in api_item_list:
-            router = APIRouter()
+            router = APIRouter(
+                tags=[api_item.uuid]
+            )
 
             if not api_item.servers:
                 continue

@@ -46,7 +46,6 @@ class APIEndpoint:
     summary: str
     operation_id: str
     parameters: list[dict] = field(default_factory=list)
-    # parameters: list[APIParameter] = field(default_factory=list)
     responses: dict = field(default_factory=dict)
 
     def __str__(self):
@@ -75,6 +74,7 @@ class APIServer:
 @dataclass
 class APIItem:
     uuid: str
+    # name: str
     paths: list[APIPathItem]
     servers: list[APIServer]
 

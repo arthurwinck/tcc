@@ -49,7 +49,7 @@ class ConectaApiSpider(Spider):
             ),
         )
 
-        # yield item
+        yield item
 
     def find_doc_link(self, uuid: str, links: list[str]) -> APIDocs:
         fixed_doc_link = Utils.get_fixed_doc_link_or_none(
