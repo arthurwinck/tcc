@@ -37,9 +37,7 @@ class EndpointGenerator:
         routers: list[APIRouter] = []
 
         for api_item in api_item_list:
-            router = APIRouter(
-                tags=[api_item.uuid]
-            )
+            router = APIRouter(tags=[api_item.name])
 
             if not api_item.servers:
                 continue
@@ -68,7 +66,7 @@ class EndpointGenerator:
 
             for param in parameters:
                 param_name = param["name"]
-                param_type = param.get("schema", {}).get("type", "string")                
+                param_type = param.get("schema", {}).get("type", "string")
                 fastapi_params[param_name] = param_type
 
             endpoint_function = DynamicFunctionCreator._create_dynamic_function(

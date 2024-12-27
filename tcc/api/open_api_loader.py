@@ -4,6 +4,7 @@ from typing import Generator
 from tcc.model import APIEndpoint, APIPathItem, APIItem, APIServer
 from tcc.utils import Utils, CACHED_API_ITEM_LIST_FILE, JSON_PATH
 
+
 class OpenApiLoader:
     """
     Classe responsável por carregar as informações dos endpoints a partir dos links disponibilizados pelo webscraper
@@ -32,7 +33,6 @@ class OpenApiLoader:
         self._load_json(path)
         return self._download_and_parse_json(use_cached)
 
-
     def _load_cached(self) -> list[APIItem] | None:
         try:
             return Utils.load_api_item_json(CACHED_API_ITEM_LIST_FILE)
@@ -42,13 +42,15 @@ class OpenApiLoader:
             )
             return None
 
-
     def _download_and_parse_json(self, use_cached: bool) -> list[APIItem]:
         api_list: list[APIItem] = list()
 
-        for response, uuid in self._download_open_api_json():
+        for open_api_dict in self._download_open_api_json():
+            uuid = open_api_dict.get("uuid", None)
+            name = open_api_dict.get("name", None)
+
             try:
-                response_json: dict = response.json()
+                response_json: dict = open_api_dict["response"].json()
                 api_path_list: list[APIPathItem] = self._parse_openapi_to_object(
                     response_json
                 )
@@ -57,7 +59,9 @@ class OpenApiLoader:
 
                 if api_path_list and uuid:
                     api_list.append(
-                        APIItem(paths=api_path_list, uuid=uuid, servers=servers)
+                        APIItem(
+                            name=name, paths=api_path_list, uuid=uuid, servers=servers
+                        )
                     )
             except Exception as e:
                 Utils.log_error(
@@ -80,12 +84,13 @@ class OpenApiLoader:
             if item["open_api_link"]:
                 response = requests.get(item["open_api_link"])
                 uuid: str = item["uuid"]
+                name: str = item["name"]
 
                 if response.status_code == 200:
-                    yield response, uuid
+                    yield {"response": response, "uuid": uuid, "name": name}
                     continue
 
-            yield None, None
+            yield None
 
     def _get_servers(self, json: dict) -> list[APIServer]:
         servers = None

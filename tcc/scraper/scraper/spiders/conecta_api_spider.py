@@ -1,4 +1,3 @@
-from dataclasses import asdict
 import re
 from typing import Generator
 from scrapy import Spider  # type: ignore
@@ -15,18 +14,17 @@ class ConectaApiSpider(Spider):
 
     def parse(self, response: Response) -> Generator:
         for api_card in response.css(".apis .row a"):
-            api_name = api_card.css("p::text").get()
+            name = api_card.css("p::text").get()
             api_link = api_card.attrib["href"]
 
-            # https://docs.scrapy.org/en/latest/intro/tutorial.html#following-links
             yield response.follow(
                 api_link,
                 self.parse_api_details,
-                meta={"api_name": api_name, "api_link": api_link},
+                meta={"name": name, "api_link": api_link},
             )
 
     def parse_api_details(self, response: Response):
-        api_name = response.meta["api_name"]
+        name = response.meta["api_name"]
         api_link = response.meta["api_link"]
 
         uuid = self.get_uuid(api_link)
@@ -34,7 +32,7 @@ class ConectaApiSpider(Spider):
         links = self.extract_links(response)
 
         item = APIDetails(
-            api_name=api_name,
+            name=name,
             uuid=uuid,
             orgao=orgao,
             versao=versao,
