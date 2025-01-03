@@ -1,5 +1,9 @@
 {
   "python.analysis.autoImportCompletions": true,
   "python.analysis.autoIndent": true,
-  "python.analysis.typeCheckingMode": "standard"
+  "python.analysis.typeCheckingMode": "standard",
+  "editor.codeActionsOnSave": {
+    "source.unusedImports": "explicit"
+  },
+  "python.analysis.fixAll" : ["source.unusedImports"]
 }

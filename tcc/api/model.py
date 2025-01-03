@@ -1,5 +1,5 @@
 from typing import Callable
-
+from fastapi import Request
 
 class DynamicEndpoint:
     def __init__(
@@ -32,8 +32,8 @@ class DynamicEndpoint:
             f")"
         )
 
-    async def __call__(self, **kwargs):
-        return await self.func(**kwargs)
+    async def __call__(self, request: Request):
+        return await self.func(request)
 
     @property
     def __name__(self):
