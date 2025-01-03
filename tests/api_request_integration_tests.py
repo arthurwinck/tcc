@@ -1,5 +1,7 @@
 import asyncio
 import os
+
+from requests import Request
 from tcc.api.endpoint_generator import EndpointGenerator
 from tcc.api.model import DynamicEndpoint
 from tcc.api.open_api_loader import OpenApiLoader
@@ -25,7 +27,7 @@ def testing_portal_transparencia_endpoint(endpoint: DynamicEndpoint):
     # response = requests.get(endpoint.url_path, params=params, headers=headers)
     # print(response.status_code)
 
-    response = asyncio.run(endpoint.func(headers=headers, params=params))
+    response = asyncio.run(endpoint.func(Request(method="get", headers=headers, params=params)))
     print(response)
 
 loader = OpenApiLoader()

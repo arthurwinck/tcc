@@ -1,8 +1,10 @@
 import re
+from fastapi import Request
 from httpx import AsyncClient
 from tcc.api.model import DynamicEndpoint
 
 class DynamicFunctionCreator:
+    
     @staticmethod
     def _create_dynamic_function(
         url_path: str,
@@ -13,25 +15,36 @@ class DynamicFunctionCreator:
         only_path: str,
     ) -> DynamicEndpoint:
 
-        async def endpoint_function(**kwargs):
+        async def endpoint_function(request: Request):
+            # Adicionar validação para parâmetros
+
             url = url_path
 
-            for param_key in list(params.keys()):
-                if param_key in list(kwargs["params"].keys()):
-                    to_replace = "{" + param_key + "}"
-                    url = url.replace(to_replace, str(kwargs["params"][param_key]))
-
-            params_to_request = kwargs.get("params", {})
-            json_to_request = kwargs.get("body", None)
-            headers_to_request = kwargs.get("headers", {})
+            try:
+                if request.path_params:
+                    url = url.format(**request.path_params)
+            except:
+                return {
+                    "status_code": 400,
+                    "data": "400 - Bad request. API Wrapper não pôde adicionar parâmetros de path e query.",
+                    "url": url,
+                }
+            
+            try:                
+                json_to_request = await request.json()
+            except:
+                json_to_request = None
 
             async with AsyncClient() as client:
+                print(request.query_params)
+                print(request.headers)
+
                 response = await client.request(
                     method=method,
                     url=url,
-                    params=params_to_request,
+                    params=dict(request.query_params),
                     json=json_to_request,
-                    headers=headers_to_request,
+                    headers=dict(request.headers),
                 )
 
             if response.status_code != 200:
@@ -42,7 +55,6 @@ class DynamicFunctionCreator:
             return {
                 "status_code": response.status_code,
                 "data": data,
-                "parameters": kwargs.get("params", {}),
                 "url": url,
             }
 
@@ -59,7 +71,7 @@ class DynamicFunctionCreator:
             responses=responses,
             func=endpoint_function,
         )
-
+    
     @staticmethod
     def replace_placeholders(text: str):
         pattern = r"\{([^}]+)\}"

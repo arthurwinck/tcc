@@ -69,7 +69,7 @@ class EndpointGenerator:
                 param_type = param.get("schema", {}).get("type", "string")
                 fastapi_params[param_name] = param_type
 
-            endpoint_function = DynamicFunctionCreator._create_dynamic_function(
+            dynamic_endpoint = DynamicFunctionCreator._create_dynamic_function(
                 url_path,
                 endpoint.method,
                 fastapi_params,
@@ -78,11 +78,11 @@ class EndpointGenerator:
                 path_item.path,
             )
 
-            endpoints[endpoint_function.__name__] = endpoint_function
+            endpoints[dynamic_endpoint.__name__] = dynamic_endpoint
 
             router.add_api_route(
                 path_item.path,
-                endpoint_function,
+                dynamic_endpoint.func,
                 methods=[endpoint.method],
                 summary=endpoint.summary,
                 operation_id=endpoint.operation_id,
